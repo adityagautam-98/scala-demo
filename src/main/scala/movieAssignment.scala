@@ -43,10 +43,10 @@ object movieAssignment {
     movieData += Movie(column(0),
       column(1),
       column(2),
-      if (column(3) == "" ) 0 else column(3).toInt,
+      if (column(3) == "") 0 else column(3).toInt,
       column(4),
       column(5).split(", ").toList,
-      if (column(6) == "" ) 0 else column(6).toInt,
+      if (column(6) == "") 0 else column(6).toInt,
       column(7).split(", ").toList,
       column(8).split(", ").toList,
       column(9).split(", ").toList,
@@ -54,8 +54,8 @@ object movieAssignment {
       column(11),
       column(12).split(", ").toList,
       column(13),
-      if (column(14) == "" ) 0 else column(14).toDouble,
-      if (column(15) == "" ) 0 else column(15).toInt,
+      if (column(14) == "") 0 else column(14).toDouble,
+      if (column(15) == "") 0 else column(15).toInt,
       column(16),
       column(17),
       column(18),
@@ -84,11 +84,22 @@ object movieAssignment {
     var count = 0
     for (i <- sortedList) {
       count += 1
-      println(  s"${count}"+ s" | ${i.imdbTitle} | ${i.userReview} | ${i.title} | ${i.year} | ${i.year} | ${i.datePublished} | ${i.genre} | ${i.duration} | ${i.country} | ${i.language} | ${i.writer} | ${i.actor} | ${i.description}")
+      println(s"${count}" + s" | ${i.imdbTitle} | ${i.userReview} | ${i.title} | ${i.year} | ${i.year} | ${i.datePublished} | ${i.genre} | ${i.duration} | ${i.country} | ${i.language} | ${i.writer} | ${i.actor} | ${i.description}")
     }
 
   }
 
+  def longestDurationByCountryAndMinVotes(country: String, minimumVotes: Int) = {
+    val selectedMovies = movieData.filter(_.country.contains(country)).filter(_.vote >= minimumVotes).sortBy(_.duration).reverse.toArray
+    println("Result for filter on County and minimum votes \n")
+    println("S.No. | IMDB NO. | Country | Duration  |  User Reviews  |     Title    | Year | Date Published | Genre | Language | Writer | Actors | Description")
+    var count = 0
+    for (i <- selectedMovies) {
+      count += 1
+      println(s"${count}" + s" | ${i.imdbTitle} | ${i.country} | ${i.duration} | ${i.userReview} | ${i.title} | ${i.year} | ${i.year} | ${i.datePublished} | ${i.genre} | ${i.language} | ${i.writer} | ${i.actor} | ${i.description}")
+
+    }
+  }
 
   def main(args: Array[String]): Unit = {
     var count = 0;
@@ -102,6 +113,7 @@ object movieAssignment {
       }
       moviesByDirectorForDuration("Francesco Bertolini", 1900, 2100)
       moviesWithUserReviews(50)
+      longestDurationByCountryAndMinVotes("Australia", 10)
     }
     catch {
       case e: FileNotFoundException => println("File not found, please verify the location.")
