@@ -95,6 +95,17 @@ object movieAssignment {
   }
 
 
+  def moviesByDirectorForDuration(director: String, fromYear: Int, tillYear: Int) = {
+    val result = movieData.filter(_.director.contains(director)).filter(_.year >= fromYear).filter(_.year <= tillYear)
+    println("Result for Query \n")
+    println("IMDB NO. | Director |     Title     |     Original Title    | Year | Date Published | Genre | Duration | Country | Language | Writer | Production | Actors | Description")
+    for (i <- result) {
+      println(s"${i.imdbTitle} | ${i.director} | ${i.title} | ${i.originalTitle} | ${i.year} | ${i.year} | ${i.datePublished} | ${i.genre} | ${i.duration} | ${i.country} | ${i.language} | ${i.writer} | ${i.productionCompany} | ${i.actor} | ${i.description}")
+    }
+    result
+  }
+
+
   def main(args: Array[String]): Unit = {
     var count = 0;
     val source = Source.fromFile("src/movies_dataset.csv")
@@ -104,7 +115,7 @@ object movieAssignment {
       buildMovieData(eachLine)
       count += 1
     }
-
+    moviesByDirectorForDuration("Francesco Bertolini", 1900, 2100)
 
   }
 
