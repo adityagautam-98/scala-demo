@@ -102,7 +102,6 @@ object movieAssignment {
       println(s"${count}" + s" | ${i.imdbTitle} | ${i.country} | ${i.duration} | ${i.userReview} | ${i.title} | ${i.year} | ${i.year} | ${i.datePublished} | ${i.genre} | ${i.language} | ${i.writer} | ${i.actor} | ${i.description}")
 
     }
-    println(selectedMovies)
     selectedMovies
   }
 

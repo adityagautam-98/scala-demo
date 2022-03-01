@@ -1,6 +1,5 @@
 import movieAssignment.{Movie, buildMovieData, longestDurationByCountryAndMinVotes, moviesByDirectorForDuration, moviesWithUserReviews, readCSVLine}
 import org.scalatest.funsuite.AnyFunSuite
-
 import java.io.FileNotFoundException
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
@@ -66,6 +65,8 @@ class moviesDataTest extends AnyFunSuite {
     assert(function.equals(ExpectedData))
 
   }
+
+
   test("Movie with minimum review test") {
 
     val ExpectedData = ArrayBuffer(Movie("tt0047189", "Long John Silver", "Long John Silver", 1954, "16-12-54", List("Action", "Adventure", "Drama"), 106, List("Australia", "USA"), List("English"),
@@ -76,18 +77,17 @@ class moviesDataTest extends AnyFunSuite {
     val function = moviesWithUserReviews(sampleData, 15)
 
     assert(function.equals(ExpectedData))
-
   }
+
+
+
   test("Longest duration by country and votes test") {
 
     val ExpectedData = ArrayBuffer(Movie("tt0047189", "Long John Silver", "Long John Silver", 1954, "16-12-54", List("Action", "Adventure", "Drama"), 106, List("Australia", "USA"), List("English"),
       List("Byron Haskin"), List("Martin Rackin"), "Treasure Island Pictures Pty. Ltd.", List("Robert Newton", "Connie Gilchrist", "Lloyd Berrell", "Grant Taylor", "Rod Taylor", "Harvey Adams", "Muriel Steinbeck",
         "Henry Gilbert", "John Brunskill", "Eric Reiman", "Harry Hambleton", "Syd Chambers", "George Simpson-Lyttle", "Tony Arpino", "Al Thomas"),
       "In this sequel to Treasure Island, Long John hopes to rescue his friend Jim from a rival pirate and return for more treasure.", 5.8, 620, "$1", "", "", 0, 16, 10))
-
-
     val function = longestDurationByCountryAndMinVotes(sampleData, "USA", 610)
-
     assert(function.equals(ExpectedData))
 
   }
