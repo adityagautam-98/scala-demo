@@ -1,44 +1,114 @@
-import org.apache.spark.sql.{Dataset, SparkSession}
+import java.io.FileNotFoundException
+import scala.collection.mutable.ArrayBuffer
+import scala.io.Source
 
-case class Movie(imdb_title_id: String, title: String, original_title: String, year: Int, date_published: String,
-                 genre: String, duration: Int, country: String, language: String,
-                 director: String, writer: String, production_company: String, actors: String,
-                 description: String, avg_vote: String, votes: String, budget: String, usa_gross_income: String,
-                 worlwide_gross_income: String, metascore: String, reviews_from_users: String, reviews_from_critics: String) {
-}
 
-object main extends App {
-  val sparkSession = SparkSession
-    .builder()
-    .appName("Spark SQL basic example").config("spark.master", "local")
-    .getOrCreate()
-
-  val movieData = sparkSession.read.option("header", "true").option("inferSchema", true)
-    .csv("C:\\My-Projects\\Scala-Projects\\scala-demo\\src\\movies_dataset.csv") // removing header,and applying schema
-  movieData.printSchema()
-
-  import sparkSession.implicits._// to resolve No implicits found for parameter evidence | line 24
-
-  println(movieData.limit(100))
-  val movieList = movieData.limit(10000)
-  val movies: Dataset[Movie] = movieList.as[Movie]
-
-  println(movies)
-
-  def movieByDirectorForDuration(director:String, from:Int, till:Int): Unit = {
-    val startYear= (till-1).toString
-    val endYear=(from+1).toString
-    val selectedMovies = movies.filter(movies("director") === director &&
-      movies("year").lt(startYear) && movies("year").gt(endYear))
-    selectedMovies.show()
+object movieAssignment {
+  case class Movie(imdbTitle: String, title: String, originalTitle: String, year: Int, datePublished: String,
+                   genre: List[String], duration: Int, country: List[String], language: List[String],
+                   director: List[String], writer: List[String], productionCompany: String, actor: List[String],
+                   description: String, avgVote: Double, vote: Int, budget: String, usaGross: String,
+                   worldGross: String, metaScore: Int, userReview: Int, criticsReview: Int) {
   }
 
-  movieByDirectorForDuration("D.W. Griffith", 1910, 2020)
+  var movieData = ArrayBuffer[Movie]()
 
+
+  def readCSVLine(source: Source): List[String] = {
+    var c = if (source.hasNext) source.next else ' '
+    var ret = List[String]()
+    var inQuotes = false
+    var current = ""
+    while (source.hasNext && c != 13) {
+      if (c == ',' && !inQuotes) {
+        ret ::= current
+        current = ""
+      }
+      else if (c == '\"') {
+        inQuotes = !inQuotes
+      }
+      else if (c == '\\') {
+        current += source.next
+      }
+      else {
+        current += c
+      }
+      c = source.next
+    }
+    ret ::= current.trim
+    ret.reverse.toList
+  }
+
+  def buildMovieData(column: List[String]) = {
+    var year = 0;
+    var duration = 0;
+    var averageVote = 0
+    var votes = 0
+    var metaScore = 0
+    var userReviews = 0
+    var criticsReviews = 0
+
+    try {
+      year = column(3).toInt
+      duration = column(6).toInt
+      averageVote = column(14).toInt
+      votes = column(15).toInt
+      metaScore = column(19).toInt
+      userReviews = column(20).toInt
+      criticsReviews = column(21).toInt
+
+    }
+    catch {
+      case e: FileNotFoundException => println("The file can't be located. Please check the file path.")
+      case e: NumberFormatException => println("Unexpected datatype found, can't covert to required format.")
+
+    }
+    try {
+      movieData += Movie(column(0),
+        column(1),
+        column(2),
+        year,
+        column(4),
+        column(5).split(", ").toList,
+        duration,
+        column(7).split(", ").toList,
+        column(8).split(", ").toList,
+        column(9).split(", ").toList,
+        column(10).split(", ").toList,
+        column(11),
+        column(12).split(", ").toList,
+        column(13),
+        averageVote,
+        votes,
+        column(16),
+        column(17),
+        column(18),
+        metaScore,
+        userReviews,
+        criticsReviews)
+    }
+    catch {
+      case e: FileNotFoundException => println("Please check your file name and Location")
+      case e: NumberFormatException => println("Caught Number Format Exception: Cannot convert to needed format")
+    }
+    movieData
+  }
+
+
+  def main(args: Array[String]): Unit = {
+    var count = 0;
+    val source = Source.fromFile("src/movies_dataset.csv")
+    source.getLines().drop(1)
+    while (source.hasNext && count < 10000) { // to only load 10000 records
+      val eachLine = readCSVLine(source)
+      buildMovieData(eachLine)
+      count += 1
+    }
+
+
+  }
 
 }
-
-
 
 
 
